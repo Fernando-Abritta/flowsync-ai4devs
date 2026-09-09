@@ -41,14 +41,15 @@ Usa asuntos de commit concisos e imperativos, opcionalmente con un alcance; por 
 
 Usa variables de entorno para los secretos de despliegue, especialmente `JWT_SECRET`. Nunca hagas commit de archivos `.env`, tokens, contraseñas ni archivos locales de la base de datos H2. Conserva el contrato documentado de respuestas y autenticación de la API al modificar cualquiera de los backends.
 
-
 ## Reglas de proceso
 
 - Antes de modificar código de una feature, crea una rama `feat/<slug>`.
-- No hagas commits directos en `main` ni `feature/spring-boot-migration`.
+- No hagas commits directos de código en `main`, `feature/spring-boot-migration`, `petroecuador-s1/end` ni `petroecuador-s2/start`.
+- Excepción de S2: los ejercicios de PRD y backlog pueden versionar exclusivamente `docs/` directamente en la rama de trabajo de la sesión, sin crear otra rama ni abrir un PR.
+- En S2 no implementes el dominio de tareas: el resultado esperado son especificaciones en `docs/prd/` y `docs/backlog/`.
 - Antes de implementar, inspecciona el contrato real del backend y presenta un plan.
-- Al cerrar la tarea, usa `$commit` sobre cambios staged.
-- Abre un PR con `gh pr create` y documenta cambios y pruebas.
+- Al cerrar una tarea, usa `$commit` sobre cambios staged. La skill no agrega archivos al staging por sí sola.
+- Para cambios de código, abre un PR con `gh pr create` y documenta cambios y pruebas. Los commits exclusivamente documentales de la sesión S2 no requieren PR.
 - Después del PR, delega una revisión al agente `adversarial-reviewer`.
 - No des por cerrada la tarea si fallan tests, formatter o existe un hallazgo crítico.
 - Cuando el PR exista, actualiza Jira a “En revisión” y comenta la URL.

@@ -54,7 +54,15 @@ def main():
 
     files = changed_files(event)
     java_files = sorted(path for path in files if path.startswith("backend-spring/src/") and path.endswith(".java"))
-    frontend_files = sorted(path.removeprefix("frontend/") for path in files if path.startswith("frontend/src/") and Path(path).suffix in PRETTIER_EXTENSIONS)
+    prettier_files = sorted(
+        path
+        for path in files
+        if (
+            path.startswith("frontend/src/")
+            or path.startswith("docs/")
+        )
+        and Path(path).suffix in PRETTIER_EXTENSIONS
+    )
     messages = []
 
     if java_files:
@@ -63,11 +71,25 @@ def main():
             return result.returncode
         messages.append(f"ran Spotless for {len(java_files)} Java file(s)")
 
-    if frontend_files:
-        result = subprocess.run(["npm", "run", "format", "--", *frontend_files], cwd=REPO_ROOT / "frontend", check=False)
+    if prettier_files:
+        prettier = REPO_ROOT / "frontend" / "node_modules" / ".bin" / "prettier"
+        if not prettier.is_file():
+            print("Prettier is not installed. Run `make setup` first.", file=sys.stderr)
+            return 1
+        result = subprocess.run(
+            [
+                str(prettier),
+                "--config",
+                str(REPO_ROOT / "frontend" / ".prettierrc.json"),
+                "--write",
+                *prettier_files,
+            ],
+            cwd=REPO_ROOT,
+            check=False,
+        )
         if result.returncode:
             return result.returncode
-        messages.append(f"ran Prettier for {len(frontend_files)} frontend file(s)")
+        messages.append(f"ran Prettier for {len(prettier_files)} frontend/docs file(s)")
 
     if messages:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "; ".join(messages)}}))

@@ -1,7 +1,7 @@
 # FlowSync API (Spring Boot)
 
 Migración del backend de FlowSync desde AdonisJS a Spring Boot. Cubre lo que
-existe hoy en `../backend` (rama `s1/start`): signup, login, logout y
+existe hoy en `../backend`: signup, login, logout y
 perfil autenticado.
 
 ## Stack
@@ -56,21 +56,21 @@ formateado).
 
 ## Variables de entorno (opcionales)
 
-| Variable | Default | Descripción |
-|---|---|---|
-| `JWT_SECRET` | secreto de dev (cambiar en prod) | clave HMAC para firmar los JWT |
-| `JWT_EXPIRATION_MINUTES` | `1440` (24h) | expiración del token |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | orígenes permitidos, separados por coma |
+| Variable                 | Default                          | Descripción                             |
+| ------------------------ | -------------------------------- | --------------------------------------- |
+| `JWT_SECRET`             | secreto de dev (cambiar en prod) | clave HMAC para firmar los JWT          |
+| `JWT_EXPIRATION_MINUTES` | `1440` (24h)                     | expiración del token                    |
+| `CORS_ALLOWED_ORIGINS`   | `http://localhost:5173`          | orígenes permitidos, separados por coma |
 
 ## Endpoints
 
-| Método | Ruta | Auth | Equivalente Adonis |
-|---|---|---|---|
-| GET | `/` | No | `router.get('/', ...)` |
-| POST | `/api/v1/auth/signup` | No | `NewAccountController.store` |
-| POST | `/api/v1/auth/login` | No | `AccessTokensController.store` |
-| GET | `/api/v1/account/profile` | Sí (Bearer JWT) | `ProfileController.show` |
-| POST | `/api/v1/account/logout` | Sí (Bearer JWT) | `AccessTokensController.destroy` |
+| Método | Ruta                      | Auth            | Equivalente Adonis               |
+| ------ | ------------------------- | --------------- | -------------------------------- |
+| GET    | `/`                       | No              | `router.get('/', ...)`           |
+| POST   | `/api/v1/auth/signup`     | No              | `NewAccountController.store`     |
+| POST   | `/api/v1/auth/login`      | No              | `AccessTokensController.store`   |
+| GET    | `/api/v1/account/profile` | Sí (Bearer JWT) | `ProfileController.show`         |
+| POST   | `/api/v1/account/logout`  | Sí (Bearer JWT) | `AccessTokensController.destroy` |
 
 > Con JWT stateless no hay token que revocar del lado servidor: el logout
 > real ocurre al descartar el token en el cliente. Si se necesita
@@ -83,13 +83,13 @@ AdonisJS envuelve en `{ "data": ... }` solo las respuestas que pasan por
 objeto plano (logout, `/`) no se envuelven. Este backend replica exactamente
 ese comportamiento:
 
-| Endpoint | Envuelto en `data` |
-|---|---|
-| `GET /` | No |
-| `POST /api/v1/auth/signup` | Sí |
-| `POST /api/v1/auth/login` | Sí |
-| `GET /api/v1/account/profile` | Sí |
-| `POST /api/v1/account/logout` | No |
+| Endpoint                      | Envuelto en `data` |
+| ----------------------------- | ------------------ |
+| `GET /`                       | No                 |
+| `POST /api/v1/auth/signup`    | Sí                 |
+| `POST /api/v1/auth/login`     | Sí                 |
+| `GET /api/v1/account/profile` | Sí                 |
+| `POST /api/v1/account/logout` | No                 |
 
 Errores de validación (payload inválido o email duplicado) devuelven
 **422** con el shape de VineJS: `{ "errors": [{ "message", "rule", "field" }] }`.
