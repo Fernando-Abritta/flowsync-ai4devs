@@ -188,6 +188,11 @@ La aplicación web SHALL ofrecer en `/login` un formulario con los campos «Emai
 - **WHEN** el servidor rechaza el email por su formato
 - **THEN** bajo el campo «Email» aparece «Introduce una dirección de email válida.»
 
+#### Scenario: El navegador no valida por su cuenta
+
+- **WHEN** la persona pulsa «Entrar» con el email o la contraseña vacíos
+- **THEN** el navegador no bloquea el envío; la petición llega al servidor y el error vuelve bajo el campo «Email» o como aviso de credenciales incorrectas
+
 #### Scenario: Aviso de sesión perdida
 
 - **WHEN** la persona llega a `/login` porque una sesión guardada no pudo restaurarse
@@ -264,8 +269,8 @@ La aplicación web SHALL mostrar en `/profile` los datos de la cuenta y SHALL pe
 #### Scenario: Cierre de sesión
 
 - **WHEN** la persona pulsa «Cerrar sesión»
-- **THEN** el botón muestra «Cerrando sesión…» y queda deshabilitado
-- **AND** la sesión local se cierra de inmediato, la persona es llevada a `/login` y el token deja de ser válido en el servidor
+- **THEN** la sesión local se cierra de inmediato y la persona es llevada a `/login`
+- **AND** el token deja de ser válido en el servidor
 
 #### Scenario: Cierre de sesión con el servidor caído
 
