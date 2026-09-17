@@ -59,7 +59,7 @@ El sistema SHALL crear una tarea en `POST /api/v1/tasks` a partir de un cuerpo J
 #### Scenario: Título ausente o en blanco
 
 - **WHEN** el cuerpo no trae `title`, o `title` es una cadena vacía o compuesta solo de espacios
-- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "title" } ] }`
+- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "title" } ] }`, con `rule` igual a `required` si falta la clave y a `minLength` si está en blanco
 - **AND** no se crea ninguna tarea
 
 #### Scenario: Título demasiado largo
@@ -165,6 +165,11 @@ La aplicación web SHALL mostrar en `/tasks`, solo a personas con sesión inicia
 
 - **WHEN** se mira cualquier fila de la lista
 - **THEN** no aparece ninguna fecha ni ninguna marca de vencida
+
+#### Scenario: Sin señales de presencia
+
+- **WHEN** otras personas del equipo están usando la aplicación al mismo tiempo
+- **THEN** la lista no muestra quién está conectado, ni quién está en línea, ni actividad por persona
 
 #### Scenario: Cargando la lista
 

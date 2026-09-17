@@ -7,7 +7,7 @@ FlowSync existe para responder «quién está en qué» de un vistazo, y hoy la 
 - **API de tareas** bajo `/api/v1/tasks`, protegida por el mismo token portador que el perfil, con exactamente tres operaciones: listar todas las tareas, crear una y actualizarla (estado y responsable). No hay lectura individual, ni borrado, ni endpoints de equipo.
 - **Modelo de tarea** con título, estado y responsable. El estado es un conjunto cerrado que viaja por la API como `pending`, `in_progress` y `done`; cualquier otro valor se rechaza con `422`. Sin fecha de vencimiento.
 - **Creación con solo el título**: la tarea nace en `pending` y con quien la crea como responsable. Título obligatorio, sin contar espacios, y con un máximo de 200 caracteres que se avisa en lugar de recortar.
-- **Lo que se expone del responsable** en la lista es únicamente su id y su nombre; nunca su email ni el resto de la cuenta.
+- **Lo que se expone del responsable** por la API es únicamente su id y su nombre; nunca su email ni el resto de la cuenta. El id viaja porque la actualización lo necesita para reasignar, pero la pantalla no lo pinta nunca: en la lista el responsable se identifica solo por su nombre, o «Sin nombre».
 - **Pantalla de lista** en `/tasks`, protegida: cada fila muestra título, responsable por su nombre (o «Sin nombre») y estado como Pendiente, En curso o Hecho. Desde la fila se cambia el estado con un gesto, sin diálogo. Formulario de creación con un único campo. Estado vacío con explicación e invitación a crear la primera.
 - **`/tasks` pasa a ser la pantalla de aterrizaje**: tras registrarse o iniciar sesión, y para cualquier ruta desconocida, la persona llega a la lista en vez de a `/profile`. El perfil sigue en `/profile` y ambas pantallas enlazan entre sí.
 - Sin tests en este change, por decisión explícita: ni base de pruebas ni casos.
@@ -35,6 +35,7 @@ Decisiones cerradas con la persona responsable del producto al proponer este cha
 - **Orden de la lista (PA-3).** No hay regla de orden decidida. La API devuelve las tareas en el orden en que las entrega el almacenamiento, sin ordenar explícitamente, y la pantalla las pinta en ese mismo orden; una tarea recién creada se añade al final de lo que ya se ve. No se inventa ningún criterio en este change.
 - **Transiciones de estado (PA-7).** Se permite pasar de cualquier estado a cualquiera de los otros dos, incluida la vuelta atrás desde «Hecho». Es la lectura literal de RF-8 y RF-9, no una decisión sobre el grafo de transiciones.
 - **Cuántas tareas «En curso» por persona (PA-4).** Sin límite.
+- **Sin señales de presencia.** El criterio propuesto CA-12 de E3-1 (la lista no muestra quién está conectado) se traduce a un scenario negativo de la pantalla de lista, aunque siga marcado como propuesto en el backlog: el PRD lo excluye del alcance y sin el scenario nada impide construirlo.
 
 ## Impact
 

@@ -46,13 +46,13 @@ Por qué: es la advertencia explícita de la historia E3-1. `UserTransformer` ex
 
 `GET /api/v1/tasks`, `POST /api/v1/tasks`, `PATCH /api/v1/tasks/:id`, en un grupo con `middleware.auth()` igual que `account`. Un solo controlador con `index`, `store` y `update`.
 
-`store` responde `201` con `response.created(...)`, a diferencia del registro de cuentas, que responde `200`: es la convención REST y se decidió al proponer. `update` usa `findOrFail` (`404` si no existe), valida con un validador de campos opcionales y, si tras validar no llega ni `status` ni `assigneeId`, lanza un error de validación de VineJS construido a mano con `field` y `message`, para que el cliente reciba el mismo `422` que en cualquier otro fallo de validación. Alternativa descartada: aceptar `{}` como no-op con `200`; es más simple pero convierte un error del cliente en silencio.
+`store` toma el responsable de `auth.getUserOrFail()`, como el controlador de perfil, y responde `201` con `response.created(...)`, a diferencia del registro de cuentas, que responde `200`: es la convención REST y se decidió al proponer. `update` usa `findOrFail` (`404` si no existe), valida con un validador de campos opcionales y, si tras validar no llega ni `status` ni `assigneeId`, lanza un error de validación de VineJS construido a mano con `field` y `message`, para que el cliente reciba el mismo `422` que en cualquier otro fallo de validación. Alternativa descartada: aceptar `{}` como no-op con `200`; es más simple pero convierte un error del cliente en silencio.
 
 La lista se obtiene con `Task.query().preload('assignee')` sin `orderBy`: el orden queda como punto abierto (PA-3) y no se codifica ningún criterio. `store` y `update` recargan la relación antes de transformar, para que la respuesta lleve siempre `assignee`.
 
-### D5. Validación del título: recorte y `notEmpty`
+### D5. Validación del título: recorte y longitud mínima de uno
 
-`title: vine.string().trim().notEmpty().maxLength(200)`. `trim` corre antes que las demás reglas, así que un título de solo espacios falla con `rule: "notEmpty"` y un título con espacios en los extremos se guarda limpio. En la actualización, cualquier `title` que llegue se descarta porque el validador no lo declara: VineJS solo devuelve los campos conocidos.
+`title: vine.string().trim().minLength(1).maxLength(200)`. `trim` corre antes que las demás reglas, así que un título de solo espacios queda vacío y falla con `rule: "minLength"`, un título ausente falla con `rule: "required"`, y un título con espacios en los extremos se guarda limpio. `VineString` no tiene `notEmpty()` en la versión instalada de VineJS (4.4): esa regla solo existe para arrays, y como `vine.create` construye el esquema al importar el módulo, usarla rompería el arranque, no un caso límite. En la actualización, cualquier `title` que llegue se descarta porque el validador no lo declara: VineJS solo devuelve los campos conocidos.
 
 ### D6. Página `/tasks` con estado local, sin contexto global ni librería de datos
 
@@ -68,7 +68,7 @@ Por qué: cumple «un gesto, sin diálogo, sin campo» con un clic y sin traer u
 
 ### D8. Formulario de creación integrado en la página, con comprobación local del blanco
 
-Un `Input` con etiqueta «Título» y un `Button` «Crear tarea» en la cabecera de la página, con `noValidate` como en auth. Antes de llamar a la API se comprueba el título recortado: si está vacío se muestra «Escribe un título para la tarea.» bajo el campo sin ir al servidor, igual que hace el registro con la confirmación de contraseña. El resto de errores llega del servidor y se traduce en el cliente de API, añadiendo `title` al mapa de etiquetas y un caso para `notEmpty`; el mensaje del `maxLength` sale de la traducción ya existente con la etiqueta «El título», ajustada para que lea «El título no puede superar los 200 caracteres.».
+Un `Input` con etiqueta «Título» y un `Button` «Crear tarea» en la cabecera de la página, con `noValidate` como en auth. Antes de llamar a la API se comprueba el título recortado: si está vacío se muestra «Escribe un título para la tarea.» bajo el campo sin ir al servidor, igual que hace el registro con la confirmación de contraseña. El resto de errores llega del servidor y se traduce en el cliente de API: se añade `title` al mapa de etiquetas y, para ese campo, las reglas `required` y `minLength` se traducen como «Escribe un título para la tarea.» (el mismo texto que la comprobación local) y `maxLength` como «El título no puede superar los 200 caracteres.». El tipo de opciones de la función de petición del cliente admite hoy solo `GET` y `POST`; hay que ampliarlo con `PATCH`.
 
 ### D9. `/tasks` como aterrizaje y enlaces cruzados
 
