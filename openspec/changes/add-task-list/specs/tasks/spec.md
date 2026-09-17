@@ -59,7 +59,7 @@ El sistema SHALL crear una tarea en `POST /api/v1/tasks` a partir de un cuerpo J
 #### Scenario: Título ausente o en blanco
 
 - **WHEN** el cuerpo no trae `title`, o `title` es una cadena vacía o compuesta solo de espacios
-- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "title" } ] }`, con `rule` igual a `required` si falta la clave y a `minLength` si está en blanco
+- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule": "required", "field": "title" } ] }`: un título vacío o de solo espacios se trata igual que uno ausente
 - **AND** no se crea ninguna tarea
 
 #### Scenario: Título demasiado largo
@@ -107,6 +107,11 @@ El sistema SHALL permitir en `PATCH /api/v1/tasks/:id`, a cualquier cuenta auten
 
 - **WHEN** `assigneeId` no corresponde a ninguna cuenta
 - **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule": "database.exists", "field": "assigneeId" } ] }` y la tarea no cambia
+
+#### Scenario: Responsable que no es un id
+
+- **WHEN** `assigneeId` no es un número entero JSON (por ejemplo `true`, `"1"` o `1.5`)
+- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "assigneeId" } ] }` y la tarea no cambia, sin convertir el valor en ningún id
 
 #### Scenario: Cuerpo sin nada que actualizar
 
