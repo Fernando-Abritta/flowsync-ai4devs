@@ -108,6 +108,11 @@ El sistema SHALL permitir en `PATCH /api/v1/tasks/:id`, a cualquier cuenta auten
 - **WHEN** `assigneeId` no corresponde a ninguna cuenta
 - **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule": "database.exists", "field": "assigneeId" } ] }` y la tarea no cambia
 
+#### Scenario: Responsable que no es un id
+
+- **WHEN** `assigneeId` no es un número entero JSON (por ejemplo `true`, `"1"` o `1.5`)
+- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "assigneeId" } ] }` y la tarea no cambia, sin convertir el valor en ningún id
+
 #### Scenario: Cuerpo sin nada que actualizar
 
 - **WHEN** el cuerpo no trae ni `status` ni `assigneeId`
