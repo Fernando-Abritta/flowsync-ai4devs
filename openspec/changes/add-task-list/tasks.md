@@ -13,8 +13,8 @@
 
 ## 3. Frontend: tipos y cliente de API
 
-- [ ] 3.1 Añadir a `lib/types.ts` los tipos `TaskStatus`, `Assignee` (`id`, `fullName | null`) y `Task`, y crear el módulo de estados del frontend con el mapa de etiquetas `Pendiente`, `En curso`, `Hecho`; verificar con `npm run build`
-- [ ] 3.2 Añadir a `lib/api.ts` el método `PATCH` al tipo de opciones de petición, `listTasks`, `createTask({ title })` y `updateTaskStatus(id, status)` (vía `PATCH` con cuerpo parcial), la etiqueta `title` en el mapa de campos y la traducción para ese campo de `required` y `minLength` («Escribe un título para la tarea.») y de `maxLength` («El título no puede superar los 200 caracteres.»); verificar con `npm run build` y `npm run lint`
+- [x] 3.1 Añadir a `lib/types.ts` los tipos `TaskStatus`, `Assignee` (`id`, `fullName | null`) y `Task`, y crear el módulo de estados del frontend con el mapa de etiquetas `Pendiente`, `En curso`, `Hecho`; verificar con `npm run build`
+- [x] 3.2 Añadir a `lib/api.ts` el método `PATCH` al tipo de opciones de petición, `listTasks`, `createTask({ title })` y `updateTaskStatus(id, status)` (vía `PATCH` con cuerpo parcial), la etiqueta `title` en el mapa de campos y la traducción para ese campo de `required` y `minLength` («Escribe un título para la tarea.») y de `maxLength` («El título no puede superar los 200 caracteres.»); verificar con `npm run build` y `npm run lint`
 
 ## 4. Frontend: pantalla de tareas
 

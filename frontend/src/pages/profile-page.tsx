@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { useAuth } from '@/auth/use-auth'
 import { Button } from '@/components/ui/button'
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -44,6 +46,11 @@ export function ProfilePage() {
               </CardDescription>
             </div>
           </div>
+          <CardAction>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/tasks">Tareas</Link>
+            </Button>
+          </CardAction>
         </CardHeader>
 
         <CardContent>

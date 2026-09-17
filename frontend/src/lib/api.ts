@@ -1,4 +1,12 @@
-import type { AuthResult, LoginPayload, SignupPayload, User } from '@/lib/types'
+import type {
+  AuthResult,
+  CreateTaskPayload,
+  LoginPayload,
+  SignupPayload,
+  Task,
+  TaskStatus,
+  User,
+} from '@/lib/types'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3333'
 
@@ -35,16 +43,40 @@ const FIELD_LABELS: Record<string, string> = {
   email: 'el email',
   password: 'la contraseña',
   passwordConfirmation: 'la confirmación de la contraseña',
+  title: 'el título',
 }
 
 const label = (field?: string) => FIELD_LABELS[field ?? ''] ?? 'el campo'
 
 /**
+ * El título de una tarea tiene sus propias frases: la genérica («Falta rellenar
+ * el título.») no invita a escribirlo. Por HTTP un título vacío o en blanco
+ * llega como `required`; `minLength` solo saltaría fuera de la petición.
+ */
+function translateTitle(rule?: string): string | undefined {
+  switch (rule) {
+    case 'required':
+    case 'minLength':
+      return 'Escribe un título para la tarea.'
+    case 'maxLength':
+      return 'El título no puede superar los 200 caracteres.'
+    default:
+      return undefined
+  }
+}
+
+/**
  * Traduce un error de VineJS a una frase que el usuario pueda entender.
- * Cubre todas las reglas que usa `app/validators/user.ts` en el backend.
+ * Cubre todas las reglas que usan `app/validators/user.ts` y
+ * `app/validators/task.ts` en el backend.
  */
 function translate(error: BackendError): string {
   const { rule, field, meta } = error
+
+  if (field === 'title') {
+    const specific = translateTitle(rule)
+    if (specific) return specific
+  }
 
   switch (rule) {
     case 'database.unique':
@@ -84,6 +116,14 @@ function toApiError(status: number, body: unknown): ApiError {
     return new ApiError('El email o la contraseña no son correctos.', status)
   }
 
+  // `findOrFail` sobre un id que ya no existe (otra persona recargó antes).
+  if (status === 404) {
+    return new ApiError(
+      'Eso ya no existe en el servidor. Recarga la página para ver la lista al día.',
+      status,
+    )
+  }
+
   if (status === 422 && errors?.length) {
     const fieldErrors: Record<string, string> = {}
     for (const error of errors) {
@@ -102,7 +142,7 @@ function toApiError(status: number, body: unknown): ApiError {
 }
 
 type RequestOptions = {
-  method?: 'GET' | 'POST'
+  method?: 'GET' | 'POST' | 'PATCH'
   body?: unknown
   token?: string | null
 }
@@ -163,4 +203,34 @@ export function logout(token: string): Promise<void> {
   return request('/api/v1/account/logout', { method: 'POST', token }).then(
     () => undefined,
   )
+}
+
+export function listTasks(token: string): Promise<Task[]> {
+  return request<{ data: Task[] }>('/api/v1/tasks', { token }).then(
+    (response) => response.data,
+  )
+}
+
+export function createTask(
+  token: string,
+  payload: CreateTaskPayload,
+): Promise<Task> {
+  return request<{ data: Task }>('/api/v1/tasks', {
+    method: 'POST',
+    body: payload,
+    token,
+  }).then((response) => response.data)
+}
+
+/** `PATCH` parcial: solo viaja el estado; el título y el responsable no se tocan. */
+export function updateTaskStatus(
+  token: string,
+  id: number,
+  status: TaskStatus,
+): Promise<Task> {
+  return request<{ data: Task }>(`/api/v1/tasks/${id}`, {
+    method: 'PATCH',
+    body: { status },
+    token,
+  }).then((response) => response.data)
 }
