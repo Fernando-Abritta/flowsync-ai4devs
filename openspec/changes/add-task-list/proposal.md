@@ -35,6 +35,7 @@ Decisiones cerradas con la persona responsable del producto al proponer este cha
 - **Orden de la lista (PA-3).** No hay regla de orden decidida. La API devuelve las tareas en el orden en que las entrega el almacenamiento, sin ordenar explícitamente, y la pantalla las pinta en ese mismo orden; una tarea recién creada se añade al final de lo que ya se ve. No se inventa ningún criterio en este change.
 - **Transiciones de estado (PA-7).** Se permite pasar de cualquier estado a cualquiera de los otros dos, incluida la vuelta atrás desde «Hecho». Es la lectura literal de RF-8 y RF-9, no una decisión sobre el grafo de transiciones.
 - **Cuántas tareas «En curso» por persona (PA-4).** Sin límite.
+- **Sesión revocada en caliente.** Si el token deja de valer mientras la persona está en `/tasks` (cierre de sesión desde otra pestaña), la pantalla muestra el aviso «Tu sesión ha caducado…» en cada intento pero no cierra la sesión local: hoy solo se cierra al arrancar (sesión que no pudo restaurarse) o desde «Cerrar sesión». Fuera del alcance de este change; se resolvería exponiendo el cierre de sesión ante un `401` desde el proveedor de sesión.
 - **Sin señales de presencia.** El criterio propuesto CA-12 de E3-1 (la lista no muestra quién está conectado) se traduce a un scenario negativo de la pantalla de lista, aunque siga marcado como propuesto en el backlog: el PRD lo excluye del alcance y sin el scenario nada impide construirlo.
 
 ## Impact

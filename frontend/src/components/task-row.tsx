@@ -60,7 +60,7 @@ export function TaskRow({ task, onStatusChange }: TaskRowProps) {
               type="button"
               size="sm"
               variant={status === task.status ? 'default' : 'outline'}
-              aria-pressed={status === task.status}
+              aria-current={status === task.status ? 'true' : undefined}
               disabled={isUpdating}
               onClick={() => changeStatus(status)}
             >
