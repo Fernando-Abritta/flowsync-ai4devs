@@ -59,7 +59,7 @@ El sistema SHALL crear una tarea en `POST /api/v1/tasks` a partir de un cuerpo J
 #### Scenario: Título ausente o en blanco
 
 - **WHEN** el cuerpo no trae `title`, o `title` es una cadena vacía o compuesta solo de espacios
-- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule", "field": "title" } ] }`, con `rule` igual a `required` si falta la clave y a `minLength` si está en blanco
+- **THEN** la respuesta es `422` con `{ "errors": [ { "message", "rule": "required", "field": "title" } ] }`: un título vacío o de solo espacios se trata igual que uno ausente
 - **AND** no se crea ninguna tarea
 
 #### Scenario: Título demasiado largo
