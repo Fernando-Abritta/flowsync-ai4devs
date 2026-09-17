@@ -13,14 +13,14 @@
 
 ## 3. Frontend: tipos y cliente de API
 
-- [ ] 3.1 Añadir a `lib/types.ts` los tipos `TaskStatus`, `Assignee` (`id`, `fullName | null`) y `Task`, y crear el módulo de estados del frontend con el mapa de etiquetas `Pendiente`, `En curso`, `Hecho`; verificar con `npm run build`
-- [ ] 3.2 Añadir a `lib/api.ts` el método `PATCH` al tipo de opciones de petición, `listTasks`, `createTask({ title })` y `updateTaskStatus(id, status)` (vía `PATCH` con cuerpo parcial), la etiqueta `title` en el mapa de campos y la traducción para ese campo de `required` y `minLength` («Escribe un título para la tarea.») y de `maxLength` («El título no puede superar los 200 caracteres.»); verificar con `npm run build` y `npm run lint`
+- [x] 3.1 Añadir a `lib/types.ts` los tipos `TaskStatus`, `Assignee` (`id`, `fullName | null`) y `Task`, y crear el módulo de estados del frontend con el mapa de etiquetas `Pendiente`, `En curso`, `Hecho`; verificar con `npm run build`
+- [x] 3.2 Añadir a `lib/api.ts` el método `PATCH` al tipo de opciones de petición, `listTasks`, `createTask({ title })` y `updateTaskStatus(id, status)` (vía `PATCH` con cuerpo parcial), la etiqueta `title` en el mapa de campos y la traducción para ese campo de `required` y `minLength` («Escribe un título para la tarea.») y de `maxLength` («El título no puede superar los 200 caracteres.»); verificar con `npm run build` y `npm run lint`
 
 ## 4. Frontend: pantalla de tareas
 
-- [ ] 4.1 Crear el formulario de creación (un solo `Input` «Título» y `Button` «Crear tarea» / «Creando…», `noValidate`, comprobación local del blanco con «Escribe un título para la tarea.», error del servidor bajo el campo y aviso general para el resto, vaciado del campo al crear); verificar en pantalla los cuatro casos: válido, vacío, solo espacios, 201 caracteres
-- [ ] 4.2 Crear la fila de tarea (título, nombre del responsable o «Sin nombre», grupo de tres `Button` con el estado actual en variante rellena, deshabilitados mientras la petición de esa fila está en curso, aviso en la fila si falla); verificar que no se muestra ninguna fecha ni el email del responsable
-- [ ] 4.3 Crear la página `/tasks`: carga con indicador mientras llega la lista, aviso si falla, estado vacío con «Todavía no hay tareas. Escribe un título arriba para crear la primera.», lista en el orden recibido, la tarea creada se añade al final y el cambio de estado sustituye la fila con la respuesta del servidor, enlace «Perfil»; verificar en pantalla con dos sesiones en dos navegadores que ambas ven la misma lista y que una puede cambiar el estado de una tarea de la otra sin diálogo
+- [x] 4.1 Crear el formulario de creación (un solo `Input` «Título» y `Button` «Crear tarea» / «Creando…», `noValidate`, comprobación local del blanco con «Escribe un título para la tarea.», error del servidor bajo el campo y aviso general para el resto, vaciado del campo al crear); verificar en pantalla los cuatro casos: válido, vacío, solo espacios, 201 caracteres
+- [x] 4.2 Crear la fila de tarea (título, nombre del responsable o «Sin nombre», grupo de tres `Button` con el estado actual en variante rellena, deshabilitados mientras la petición de esa fila está en curso, aviso en la fila si falla); verificar que no se muestra ninguna fecha ni el email del responsable
+- [x] 4.3 Crear la página `/tasks`: carga con indicador mientras llega la lista, aviso si falla, estado vacío con «Todavía no hay tareas. Escribe un título arriba para crear la primera.», lista en el orden recibido, la tarea creada se añade al final y el cambio de estado sustituye la fila con la respuesta del servidor, enlace «Perfil»; verificar en pantalla con dos sesiones en dos navegadores que ambas ven la misma lista y que una puede cambiar el estado de una tarea de la otra sin diálogo
 
 ## 5. Frontend: enrutado y enlaces
 

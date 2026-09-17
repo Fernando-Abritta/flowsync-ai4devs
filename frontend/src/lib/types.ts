@@ -30,3 +30,27 @@ export type LoginPayload = {
   email: string
   password: string
 }
+
+/** Valores con los que viaja el estado por la API. Las etiquetas en castellano viven en `lib/task-status.ts`. */
+export type TaskStatus = 'pending' | 'in_progress' | 'done'
+
+/**
+ * Espejo de `AssigneeTransformer` del backend: de la persona responsable solo
+ * llegan estos dos datos, a propósito.
+ */
+export type Assignee = {
+  id: number
+  fullName: string | null
+}
+
+/** Espejo de `TaskTransformer` del backend. */
+export type Task = {
+  id: number
+  title: string
+  status: TaskStatus
+  assignee: Assignee
+}
+
+export type CreateTaskPayload = {
+  title: string
+}
