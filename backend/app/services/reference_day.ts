@@ -2,7 +2,7 @@ import { clientDateValidator } from '#validators/client_date'
 import type { HttpRequest } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 
-export const CLIENT_DATE_HEADER = 'x-client-date'
+const CLIENT_DATE_HEADER = 'x-client-date'
 
 /**
  * Resolves the calendar day the overdue verdict is computed against: the day
