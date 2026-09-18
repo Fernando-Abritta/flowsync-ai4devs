@@ -4,7 +4,7 @@ import type {
   LoginPayload,
   SignupPayload,
   Task,
-  TaskStatus,
+  UpdateTaskPayload,
   User,
 } from '@/lib/types'
 
@@ -44,7 +44,16 @@ const FIELD_LABELS: Record<string, string> = {
   password: 'la contraseña',
   passwordConfirmation: 'la confirmación de la contraseña',
   title: 'el título',
+  dueDate: 'la fecha de vencimiento',
 }
+
+/**
+ * La cabecera `X-Client-Date` solo puede fallar por un bug del cálculo del día
+ * local o por un reloj del equipo imposible; como ese 422 tumba también la
+ * carga de la lista, merece un mensaje accionable en vez de «Revisa el campo.».
+ */
+const CLIENT_DATE_MESSAGE =
+  'No se ha podido determinar la fecha de hoy. Comprueba la fecha y la hora del equipo.'
 
 const label = (field?: string) => FIELD_LABELS[field ?? ''] ?? 'el campo'
 
@@ -78,6 +87,8 @@ function translate(error: BackendError): string {
     if (specific) return specific
   }
 
+  if (field === 'clientDate') return CLIENT_DATE_MESSAGE
+
   switch (rule) {
     case 'database.unique':
       return field === 'email'
@@ -87,6 +98,8 @@ function translate(error: BackendError): string {
       return 'Las contraseñas no coinciden.'
     case 'email':
       return 'Introduce una dirección de email válida.'
+    case 'date':
+      return 'Introduce una fecha válida.'
     case 'required':
       return `Falta rellenar ${label(field)}.`
     case 'minLength':
@@ -145,13 +158,22 @@ type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH'
   body?: unknown
   token?: string | null
+  headers?: Record<string, string>
 }
 
 async function request<T>(
   path: string,
-  { method = 'GET', body, token }: RequestOptions = {},
+  {
+    method = 'GET',
+    body,
+    token,
+    headers: extraHeaders = {},
+  }: RequestOptions = {},
 ): Promise<T> {
-  const headers: Record<string, string> = { Accept: 'application/json' }
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    ...extraHeaders,
+  }
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (token) headers.Authorization = `Bearer ${token}`
 
@@ -205,8 +227,41 @@ export function logout(token: string): Promise<void> {
   )
 }
 
+/**
+ * Día de calendario local del navegador como `AAAA-MM-DD`. Se construye con
+ * los getters locales, nunca con `toISOString`, que daría el día en UTC y
+ * cambiaría de día a otra hora que el reloj de la persona.
+ */
+function localCalendarDay(): string {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
+}
+
+/**
+ * Toda petición de tareas declara el día de quien mira: el servidor calcula
+ * `isOverdue` contra él. Se calcula en cada petición, no al cargar el módulo,
+ * para que una pestaña abierta durante días siga enviando el día correcto.
+ */
+function taskRequest<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  return request<T>(path, {
+    ...options,
+    headers: { ...options.headers, 'X-Client-Date': localCalendarDay() },
+  })
+}
+
 export function listTasks(token: string): Promise<Task[]> {
-  return request<{ data: Task[] }>('/api/v1/tasks', { token }).then(
+  return taskRequest<{ data: Task[] }>('/api/v1/tasks', { token }).then(
+    (response) => response.data,
+  )
+}
+
+export function getTask(token: string, id: number | string): Promise<Task> {
+  return taskRequest<{ data: Task }>(`/api/v1/tasks/${id}`, { token }).then(
     (response) => response.data,
   )
 }
@@ -215,22 +270,22 @@ export function createTask(
   token: string,
   payload: CreateTaskPayload,
 ): Promise<Task> {
-  return request<{ data: Task }>('/api/v1/tasks', {
+  return taskRequest<{ data: Task }>('/api/v1/tasks', {
     method: 'POST',
     body: payload,
     token,
   }).then((response) => response.data)
 }
 
-/** `PATCH` parcial: solo viaja el estado; el título y el responsable no se tocan. */
-export function updateTaskStatus(
+/** `PATCH` parcial: solo viajan las claves del `patch`; el título y el responsable no se tocan. */
+export function updateTask(
   token: string,
   id: number,
-  status: TaskStatus,
+  patch: UpdateTaskPayload,
 ): Promise<Task> {
-  return request<{ data: Task }>(`/api/v1/tasks/${id}`, {
+  return taskRequest<{ data: Task }>(`/api/v1/tasks/${id}`, {
     method: 'PATCH',
-    body: { status },
+    body: patch,
     token,
   }).then((response) => response.data)
 }

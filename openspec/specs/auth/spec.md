@@ -140,7 +140,7 @@ La aplicación web SHALL ofrecer en `/register` un formulario con los campos «N
 
 - **WHEN** la persona rellena email, contraseña y confirmación válidos y pulsa «Crear cuenta»
 - **THEN** el botón muestra «Creando cuenta…» y queda deshabilitado mientras se espera la respuesta
-- **AND** al completarse, la sesión queda iniciada y la persona es llevada a `/profile` sin pasar por el inicio de sesión
+- **AND** al completarse, la sesión queda iniciada y la persona es llevada a `/tasks` sin pasar por el inicio de sesión
 
 #### Scenario: Nombre en blanco
 
@@ -176,7 +176,7 @@ La aplicación web SHALL ofrecer en `/login` un formulario con los campos «Emai
 
 - **WHEN** la persona introduce credenciales válidas y pulsa «Entrar»
 - **THEN** el botón muestra «Entrando…» y queda deshabilitado mientras se espera la respuesta
-- **AND** al completarse, la persona es llevada a `/profile`
+- **AND** al completarse, la persona es llevada a `/tasks`
 
 #### Scenario: Credenciales incorrectas
 
@@ -235,22 +235,22 @@ La aplicación web SHALL conservar la sesión en el navegador entre recargas y S
 
 ### Requirement: Protección de rutas en la aplicación web
 
-La aplicación web SHALL restringir `/profile` a personas con sesión iniciada, SHALL apartar de `/login` y `/register` a quien ya tiene sesión, y SHALL redirigir cualquier otra ruta a `/profile`.
+La aplicación web SHALL restringir `/tasks` y `/profile` a personas con sesión iniciada, SHALL apartar de `/login` y `/register` a quien ya tiene sesión, y SHALL redirigir cualquier otra ruta a `/tasks`.
 
 #### Scenario: Ruta protegida sin sesión
 
-- **WHEN** una persona sin sesión abre `/profile`
+- **WHEN** una persona sin sesión abre `/tasks` o `/profile`
 - **THEN** es llevada a `/login`
 
 #### Scenario: Pantallas de acceso con sesión iniciada
 
 - **WHEN** una persona con sesión iniciada abre `/login` o `/register`
-- **THEN** es llevada a `/profile`
+- **THEN** es llevada a `/tasks`
 
 #### Scenario: Ruta desconocida
 
-- **WHEN** se abre cualquier ruta distinta de `/login`, `/register` y `/profile`
-- **THEN** la persona es llevada a `/profile`, y desde ahí a `/login` si no tiene sesión
+- **WHEN** se abre cualquier ruta distinta de `/login`, `/register`, `/tasks` y `/profile`
+- **THEN** la persona es llevada a `/tasks`, y desde ahí a `/login` si no tiene sesión
 
 #### Scenario: Sin redirecciones mientras se restaura la sesión
 
@@ -259,7 +259,7 @@ La aplicación web SHALL restringir `/profile` a personas con sesión iniciada, 
 
 ### Requirement: Pantalla de perfil y cierre de sesión
 
-La aplicación web SHALL mostrar en `/profile` los datos de la cuenta y SHALL permitir cerrar la sesión desde esa pantalla.
+La aplicación web SHALL mostrar en `/profile` los datos de la cuenta, SHALL ofrecer un enlace «Tareas» hacia `/tasks` y SHALL permitir cerrar la sesión desde esa pantalla.
 
 #### Scenario: Datos mostrados
 
@@ -276,3 +276,8 @@ La aplicación web SHALL mostrar en `/profile` los datos de la cuenta y SHALL pe
 
 - **WHEN** la persona pulsa «Cerrar sesión» y el servidor no responde o rechaza la petición
 - **THEN** la sesión local se cierra igualmente y la persona es llevada a `/login`
+
+#### Scenario: Volver a la lista
+
+- **WHEN** la persona pulsa el enlace «Tareas» en la pantalla de perfil
+- **THEN** es llevada a `/tasks`

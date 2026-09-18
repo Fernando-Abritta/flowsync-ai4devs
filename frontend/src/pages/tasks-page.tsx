@@ -66,7 +66,7 @@ export function TasksPage() {
   }
 
   const handleStatusChange = async (id: number, status: TaskStatus) => {
-    const updated = await api.updateTaskStatus(token, id, status)
+    const updated = await api.updateTask(token, id, { status })
     setTasks(
       (current) =>
         current?.map((task) => (task.id === updated.id ? updated : task)) ??

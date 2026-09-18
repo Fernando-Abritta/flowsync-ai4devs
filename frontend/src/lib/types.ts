@@ -43,14 +43,27 @@ export type Assignee = {
   fullName: string | null
 }
 
-/** Espejo de `TaskTransformer` del backend. */
+/**
+ * Espejo de `TaskTransformer` del backend. `isOverdue` lo calcula el servidor
+ * en cada lectura contra el día que declara la cabecera `X-Client-Date`;
+ * el cliente nunca lo envía.
+ */
 export type Task = {
   id: number
   title: string
   status: TaskStatus
+  /** Fecha de calendario `AAAA-MM-DD`, o `null` si la tarea no tiene fecha. */
+  dueDate: string | null
+  isOverdue: boolean
   assignee: Assignee
 }
 
 export type CreateTaskPayload = {
   title: string
+}
+
+/** `PATCH` parcial: `dueDate: null` quita la fecha; una clave ausente no toca ese campo. */
+export type UpdateTaskPayload = {
+  status?: TaskStatus
+  dueDate?: string | null
 }
