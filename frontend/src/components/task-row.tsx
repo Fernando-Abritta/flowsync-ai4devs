@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { AlertCircleIcon } from 'lucide-react'
 import { ApiError } from '@/lib/api'
 import { TASK_STATUS_LABELS, TASK_STATUSES } from '@/lib/task-status'
@@ -15,6 +16,8 @@ type TaskRowProps = {
 /**
  * Una fila responde «quién está en qué»: título, nombre del responsable y
  * estado. Del responsable solo se pinta el nombre; nunca el email ni el id.
+ * La fecha de vencimiento y la marca de vencida se quedan a propósito fuera
+ * de la lista: se ven al abrir la tarea desde su título.
  */
 export function TaskRow({ task, onStatusChange }: TaskRowProps) {
   const [isUpdating, setUpdating] = useState(false)
@@ -43,7 +46,11 @@ export function TaskRow({ task, onStatusChange }: TaskRowProps) {
     <li className="bg-card text-card-foreground grid gap-3 rounded-lg border p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <p className="font-medium break-words">{task.title}</p>
+          <p className="font-medium break-words">
+            <Link to={`/tasks/${task.id}`} className="hover:underline">
+              {task.title}
+            </Link>
+          </p>
           <p className="text-muted-foreground text-sm">
             {task.assignee.fullName ?? 'Sin nombre'}
           </p>
